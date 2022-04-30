@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "atomic": "c",
+        "bitset": "c",
+        "stdlib.h": "c"
+    }
+}
