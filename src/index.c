@@ -12,7 +12,7 @@
  */ 
 struct index
 {
-    map_t* hash, *documents;
+    map_t* hash, *doc;
     list_t* linkl;
 };
 
@@ -22,11 +22,9 @@ struct index
  */
 struct search_result
 {
-    list_t* linkl;
+    list_t* *linkl;
     int size;
 };
-
-
 
 static inline int cmp_ints(void *a, void *b)
 {
@@ -101,8 +99,7 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
     printf("%s",word);
     //printf("");
     }
-    index_find(idx->hash, "touch");
-    //list_destroyiter(iter);
+    list_destroyiter(iter);
 }
 
 /*
@@ -112,12 +109,12 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
 search_result_t *index_find(index_t *idx, char *query)
 {
     list_iter_t *iter;
-    search_result_t *search_result;
+    search_result_t *search_result = malloc(sizeof(search_result_t));
     list_t *list;
     int length;
 
     // Open map
-    list = map_get(idx,query);
+    list = map_get(idx->hash,query);
     if (list != NULL){
         iter = list_createiter(list);
         search_result->linkl = list_create(cmp_ints);
@@ -143,13 +140,16 @@ search_result_t *index_find(index_t *idx, char *query)
         }
         printf("\n");
         //return search_result->linkl;
-        list_destroy(list);
         list_destroyiter(iter);
+        list_destroy(list);
     }
     else{
         printf("the word \"%s\" was not found in your document\n", query);
         search_result->linkl = NULL;
     }
+    // FOR Å TESTE RESULT GET!! ! !! !  !
+    // char **test2 = result_get_content(search_result);
+    // printf("%s",test2);
     return search_result;
 }
 
@@ -173,7 +173,8 @@ char *autocomplete(index_t *idx, char *input, size_t size)
  */
 char **result_get_content(search_result_t *res)
 {
-    return NULL;
+    char *test[50] = {"hei du er kul", "takk"};
+    return *test;
 }
 
 
@@ -183,7 +184,7 @@ char **result_get_content(search_result_t *res)
  */
 int result_get_content_length(search_result_t *res)
 {
-    return NULL;
+    return 50;
 }
 
 
@@ -194,6 +195,7 @@ int result_get_content_length(search_result_t *res)
  */
 search_hit_t *result_next(search_result_t *res)
 {
+    // hver gang man trykker enter så går den til neste lokasjon
     // search_hit_t *hit;
     // list_iter_t *iter;
 

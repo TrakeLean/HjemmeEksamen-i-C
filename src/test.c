@@ -155,7 +155,6 @@ int test_index()
         list_t *words = list_create(cmpfunc);
         tokenize_file("data2/tarek.txt", words);
         index_add_document(idx, "tarek", words);
-        index_add_document(idx, "cup", words);
     }
 
     if (caught_segfault == true)

@@ -96,13 +96,14 @@ void main_program_loop()
 
 int main(int argc, char **argv)
 {
-    if (argc != 2)
-    {
-        ERROR_PRINT("Usage: %s <root-dir>\n", argv[0]);
-        return 1;
-    }
+    // if (argc != 2)
+    // {
+    //     ERROR_PRINT("Usage: %s <root-dir>\n", argv[0]);
+    //     return 1;
+    // }
 
-    char *root_dir = argv[1];
+    //char *root_dir = argv[1];
+    char *root_dir = "data2";
     initialize_index(root_dir);
     
     //ui_init();
