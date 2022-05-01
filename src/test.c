@@ -153,8 +153,8 @@ int test_index()
     if (catch == true)
     {
         list_t *words = list_create(cmpfunc);
-        tokenize_file("data2/tarek.txt", words);
-        index_add_document(idx, "tarek", words);
+        tokenize_file("data/hamlet.txt", words);
+        index_add_document(idx, "hamlet", words);
     }
 
     if (caught_segfault == true)
@@ -176,7 +176,7 @@ int test_index()
     sigsetjmp(jbuf, !0);
     if (catch == true)
     {
-        sr = index_find(idx, "touch");
+        sr = index_find(idx, "frogman");
     }
 
     if (caught_segfault == true)

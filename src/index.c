@@ -22,9 +22,18 @@ struct index
  */
 struct search_result
 {
-    list_t* *linkl;
+    list_t* linkl;
     int size;
 };
+
+struct document
+{
+    char *name;
+    map_t* hash;
+    list_t* words;
+};
+
+
 
 static inline int cmp_ints(void *a, void *b)
 {
@@ -58,8 +67,8 @@ index_t *index_create()
  */
 void index_destroy(index_t *index)
 {
-    list_destroy(index->linkl);
     free(index->hash);
+    free(index);
 }
 
 
@@ -71,7 +80,15 @@ void index_destroy(index_t *index)
 void index_add_document(index_t *idx, char *document_name, list_t *words)
 {
     list_iter_t *iter;
+    search_result_t *search_result = malloc(sizeof(search_result_t));
+    document_t *document = malloc(sizeof(document_t));
     list_t *combo;
+
+    // Store document data for later use
+    document->hash = map_create(cmp_strs,djb2);
+    document->name = document_name;
+    document->words = words;
+    map_put(document->hash, document->name, document->words);
 
     int placement = 0;
     iter = list_createiter (words);
@@ -82,24 +99,28 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
         // Iterate through words in file
         char *word = list_next(iter);
         // "SKIP" spaces
-        if (word == " "){
+        if (word == " " || word == "\0" || word == "\n"){
             placement --;
         }
         // Create linkedlist for duplicate words
         combo = list_create(cmp_ints);
-        // Push word last in linkedlist if the map allready contains the word
+        // Push word last in linkedlist if the map already contains the word
         if (map_haskey(idx->hash, word)){
             list_addlast(map_get(idx->hash,word), placement);
+
         }
         // Create new linkedlist if map does not containt the word
         else{
             list_addfirst(combo,placement);
             map_put(idx->hash,word, combo);
         }
-    printf("%s",word);
+    //printf("%s",word);
     //printf("");
     }
     list_destroyiter(iter);
+
+    /////////////////////////////////////////////
+    result_get_content(search_result);
 }
 
 /*
@@ -132,25 +153,22 @@ search_result_t *index_find(index_t *idx, char *query)
         // Useless, used to see if code is working or not, has nothing
         // to do with the code it self.
         iter = list_createiter(search_result->linkl);
-        printf("Length: %i\n", length);
-        printf("Index");
-        while (list_hasnext(iter))
-        {
-            printf(" - %i", list_next(iter));
-        }
-        printf("\n");
-        //return search_result->linkl;
+        // printf("Length: %i\n", length);
+        // printf("Index");
+        // while (list_hasnext(iter))
+        // {
+        //     printf(" - %i", list_next(iter));
+        // }
+        // printf("\n");
         list_destroyiter(iter);
         list_destroy(list);
+        return search_result;
     }
     else{
         printf("the word \"%s\" was not found in your document\n", query);
         search_result->linkl = NULL;
     }
-    // FOR Å TESTE RESULT GET!! ! !! !  !
-    // char **test2 = result_get_content(search_result);
-    // printf("%s",test2);
-    return search_result;
+    //return search_result;
 }
 
 
@@ -159,6 +177,7 @@ search_result_t *index_find(index_t *idx, char *query)
  * The input string is NULL terminated and contains size letters (excluding null termination).
  * The output string MUST be null terminated.
  */ 
+
 char *autocomplete(index_t *idx, char *input, size_t size)
 {
     return NULL;
@@ -173,8 +192,18 @@ char *autocomplete(index_t *idx, char *input, size_t size)
  */
 char **result_get_content(search_result_t *res)
 {
-    char *test[50] = {"hei du er kul", "takk"};
-    return *test;
+    // list_iter_t *iter;
+    // printf("%i",res->size);
+
+    // *iter = list_createiter(res->linkl);
+    // while (list_hasnext(iter))
+    // {
+    //     printf("%s",list_next(iter));
+    //     break;
+    // }
+
+    // char *test[50] = {"hei du er kul", "takk"};
+    // return *test;
 }
 
 
@@ -196,16 +225,19 @@ int result_get_content_length(search_result_t *res)
 search_hit_t *result_next(search_result_t *res)
 {
     // hver gang man trykker enter så går den til neste lokasjon
-    // search_hit_t *hit;
-    // list_iter_t *iter;
+    search_hit_t *search_hit = malloc(sizeof(search_hit_t));
+    list_iter_t *iter;
 
-    // if (res == NULL){
-    //     return hit;
-    // }
-    // else{
-    //     hit->location = list_next(iter);
-    //     hit->len = list_next(iter);
-    // }
-    // return hit;
-    return NULL;
+    iter = list_createiter(res->linkl);
+
+    if (res == NULL){
+        return search_hit;
+    }
+    else{
+        search_hit->location = 6;
+        search_hit->len = res->size;
+        //printf("\nlocation: %d ---- length: %d\n",search_hit->location, search_hit->len);
+
+        return search_hit;
+    }
 }

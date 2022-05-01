@@ -10,11 +10,11 @@
  */
 typedef struct document document_t;
 
-struct document
-{
-    index_t* name;
-    list_t* words;
-};
+// struct document
+// {
+//     index_t* name;
+//     list_t* words;
+// };
 
 /*
  * Locates memory for the document.

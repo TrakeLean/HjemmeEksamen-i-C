@@ -105,7 +105,7 @@ int main(int argc, char **argv)
     //char *root_dir = argv[1];
     char *root_dir = "data2";
     initialize_index(root_dir);
-    
+
     //ui_init();
     //main_program_loop();
 
