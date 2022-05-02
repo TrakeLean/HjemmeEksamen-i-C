@@ -2,6 +2,10 @@
     "files.associations": {
         "atomic": "c",
         "bitset": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "index.h": "c",
+        "map.h": "c",
+        "document.h": "c",
+        "trie.h": "c"
     }
 }

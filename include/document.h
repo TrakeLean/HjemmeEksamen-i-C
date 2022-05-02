@@ -1,20 +1,21 @@
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
-#include "list.h"
-#include "map.h"
 #include "index.h"
+#include "map.h"
+#include "printing.h"
+#include "trie.h"
 
 /*
  * Struct that holds the documents name and words
  */
 typedef struct document document_t;
 
-// struct document
-// {
-//     index_t* name;
-//     list_t* words;
-// };
+struct document
+{
+    list_t* *name, *words;
+    map_t* hash;
+};
 
 /*
  * Locates memory for the document.

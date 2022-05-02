@@ -7,6 +7,7 @@
 #include "trie.h"
 #include "document.h"
 
+
 /*
  * Implement your index here.
  */ 
@@ -25,15 +26,6 @@ struct search_result
     list_t* linkl;
     int size;
 };
-
-struct document
-{
-    char *name;
-    map_t* hash;
-    list_t* words;
-};
-
-
 
 static inline int cmp_ints(void *a, void *b)
 {
@@ -77,18 +69,16 @@ void index_destroy(index_t *index)
  * Adds all the words from the given document to the given index.
  * This function is responsible for deallocating the list and the document name after use.
  */
-void index_add_document(index_t *idx, char *document_name, list_t *words)
+void index_add_document(index_t *idx, document_t *document, char *document_name, list_t *words)
 {
     list_iter_t *iter;
     search_result_t *search_result = malloc(sizeof(search_result_t));
-    document_t *document = malloc(sizeof(document_t));
     list_t *combo;
 
-    // Store document data for later use
-    document->hash = map_create(cmp_strs,djb2);
-    document->name = document_name;
-    document->words = words;
-    map_put(document->hash, document->name, document->words);
+    // Store document data for later
+    // list_addlast(document->name, document_name);
+    // document->words = words;
+    // map_put(document->hash, document_name, words);
 
     int placement = 0;
     iter = list_createiter (words);
@@ -118,9 +108,6 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
     //printf("");
     }
     list_destroyiter(iter);
-
-    /////////////////////////////////////////////
-    result_get_content(search_result);
 }
 
 /*
@@ -162,6 +149,7 @@ search_result_t *index_find(index_t *idx, char *query)
         // printf("\n");
         list_destroyiter(iter);
         list_destroy(list);
+
         return search_result;
     }
     else{
@@ -183,6 +171,11 @@ char *autocomplete(index_t *idx, char *input, size_t size)
     return NULL;
 }
 
+void test(document_t *document)
+{
+    result_get_content(NULL, document);
+}
+
 
 /* 
  * Return the content of the current document.
@@ -190,20 +183,39 @@ char *autocomplete(index_t *idx, char *input, size_t size)
  * This function should only be called once for each document.
  * This function should return NULL if there are no more documents.
  */
-char **result_get_content(search_result_t *res)
+char **result_get_content(search_result_t *res, document_t *document)
 {
-    // list_iter_t *iter;
-    // printf("%i",res->size);
+    list_iter_t *iter;
+    list_t *list;
 
-    // *iter = list_createiter(res->linkl);
+
+    iter = list_createiter(document->name);
+
+    while (list_hasnext(iter))
+    {
+        printf("%s\n", list_next(document->name));
+    }
+
+    //char *name = list_next(document->name);
+    //iter = list_createiter(map_get(document->hash, name));
     // while (list_hasnext(iter))
     // {
-    //     printf("%s",list_next(iter));
-    //     break;
+    //     printf("%s", list_next(iter));
     // }
 
+    
+    
+    // printf("%s",list_next(document->name));
+    // iter = list_createiter(document->name);
+    // while (list_hasnext(iter))
+    // {
+    //     char *word = list_next(iter);
+    //     printf("%s",word);
+    // }
     // char *test[50] = {"hei du er kul", "takk"};
     // return *test;
+    // printf("%s",list_next(document->name));
+    return NULL;
 }
 
 
@@ -211,7 +223,7 @@ char **result_get_content(search_result_t *res)
  * Get the length of the current document.
  * Subsequent calls should return the length of the same document.
  */
-int result_get_content_length(search_result_t *res)
+int result_get_content_length(search_result_t *res, document_t *document)
 {
     return 50;
 }
@@ -234,7 +246,7 @@ search_hit_t *result_next(search_result_t *res)
         return search_hit;
     }
     else{
-        search_hit->location = 6;
+        search_hit->location = list_next(iter);
         search_hit->len = res->size;
         //printf("\nlocation: %d ---- length: %d\n",search_hit->location, search_hit->len);
 
