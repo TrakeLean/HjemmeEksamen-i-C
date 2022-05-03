@@ -186,12 +186,13 @@ char **result_get_content(search_result_t *res)
     list_iter_t *docu_iter, *word_iter;
     list_t *list;
 
-    //printf("\n%s", list_next(res->document->name));
     res->document->current = list_next(res->document->name);
 
-    printf("%s\n",res->document->name);
-    //docu_iter = list_createiter(res->document->name);
-    // list = map_get(res->document->hash, list_next(docu_iter));
+    printf("%s\n",res->document->current);
+
+    list = map_get(res->document->hash, res->document->current);
+    
+    // map open get array with words.
     // word_iter = list_createiter(list);
 
     // while (list_hasnext(word_iter))
