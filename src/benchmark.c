@@ -15,7 +15,7 @@ const char *example[15] = {
     " ", 
     "dolor",
     " ",
-    "sit"
+    "sit",
     " ", 
     "amet",
     ",",
@@ -80,6 +80,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < nruns; i++)
     {
         index_t *idx = index_create();
+        document_t *document = document_create();
         if (idx == NULL)
         {
             ERROR_PRINT("Could not allocate index");
@@ -91,7 +92,7 @@ int main(int argc, char **argv)
 
         // Test inserts
         before = gettime();
-        index_add_document(idx, doc_name, words);
+        index_add_document(idx, document, doc_name, words);
         after = gettime();
         fprintf(stdout, "%d %llu %lf ", nwords, after - before, (double)(after - before) / nwords);
         avg_add += (double)(after - before) / nwords;

@@ -194,6 +194,7 @@ char **result_get_content(search_result_t *res, document_t *document)
     while (list_hasnext(iter))
     {
         printf("%s\n", list_next(document->name));
+        printf("ASD");
     }
 
     //char *name = list_next(document->name);
