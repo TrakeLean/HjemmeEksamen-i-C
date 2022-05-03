@@ -26,6 +26,7 @@ struct search_result
 {
     document_t* document;
     list_t* linkl;
+    char** curr_array;
     int size;
 };
 
@@ -75,14 +76,17 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
 {
     list_iter_t *iter;
     search_result_t *search_result = malloc(sizeof(search_result_t));
+    document_t *document = malloc(sizeof(document_t));
+    document->word_array = malloc(sizeof(char*)*list_size(words));
     list_t *combo;
 
     search_result->document = document_create();
     // Store document data for later
     list_addlast(search_result->document->name, document_name);
-    search_result->document->words = words;
-    map_put(search_result->document->hash, document_name, words);
+    // search_result->document->words = words;
+    // map_put(search_result->document->hash, document_name, words);
 
+    int word_place = 0;
     int placement = 0;
     iter = list_createiter (words);
     // Iterate through list of files
@@ -107,9 +111,19 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
             list_addfirst(combo,placement);
             map_put(idx->hash,word, combo);
         }
+
+        document->word_array[word_place] = word;
+
+        word_place ++;
+
+
     //printf("%s",word);
     //printf("");
     }
+    map_put(search_result->document->hash, document_name, document->word_array);
+
+    //printf("%s ",document->word_array[0]);
+
     result_get_content(search_result);
     list_destroyiter(iter);
 }
@@ -188,19 +202,9 @@ char **result_get_content(search_result_t *res)
 
     res->document->current = list_next(res->document->name);
 
-    printf("%s\n",res->document->current);
-
-    list = map_get(res->document->hash, res->document->current);
+    res->curr_array = map_get(res->document->hash, res->document->current);
     
-    // map open get array with words.
-    // word_iter = list_createiter(list);
-
-    // while (list_hasnext(word_iter))
-    // {
-    //     printf("%s", list_next(word_iter));
-    // }
-
-    return NULL;
+    return res->curr_array;
 }
 
 
