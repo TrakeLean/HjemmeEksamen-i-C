@@ -17,3 +17,6 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
     list_destroyiter(iter);
 
 }
+
+
+search_result->document->word_array = malloc(sizeof(char*)*list_size(words));

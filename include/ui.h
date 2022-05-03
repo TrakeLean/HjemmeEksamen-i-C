@@ -12,6 +12,6 @@ void ui_deinit();
 
 char *ui_main(index_t *idx);
 
-void ui_result(search_result_t *res, document_t *document);
+void ui_result(search_result_t *res);
 
 #endif

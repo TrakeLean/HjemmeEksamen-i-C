@@ -25,8 +25,6 @@ struct search_hit
  */
 index_t *index_create();
 
-void test(document_t *document);
-
 /*
  * Destroys the given index.  Subsequently accessing the index will
  * lead to undefined behavior.
@@ -38,7 +36,7 @@ void index_destroy(index_t *index);
  * Adds all the words from the given document to the given index.
  * This function is responsible for deallocating the list and the document name after use.
  */
-void index_add_document(index_t *idx, document_t *document, char *document_name, list_t *words);
+void index_add_document(index_t *idx, char *document_name, list_t *words);
 
 
 /*
@@ -65,13 +63,13 @@ char *autocomplete(index_t *idx, char *input, size_t size);
  * This function should only be called once for each document.
  * This function should return NULL if there are no more documents.
  */
-char **result_get_content(search_result_t *res, document_t *document);
+char **result_get_content(search_result_t *res);
 
 /*
  * Get the length of the current document.
  * Subsequent calls should return the length of the same document.
  */
-int result_get_content_length(search_result_t *res, document_t *document);
+int result_get_content_length(search_result_t *res);
 
 /*
  * Get the next result from the current query.

@@ -12,7 +12,6 @@
 
 
 index_t *idx = NULL;
-document_t *document = NULL;
 
 
 int mystrcmp(void *a, void *b)
@@ -56,11 +55,6 @@ void initialize_index(char *root_dir)
     {
         ERROR_PRINT("Failed to create index\n");
     }
-    document = document_create();
-    if (document == NULL)
-    {
-        ERROR_PRINT("Failed to create document\n");
-    }
 
     iter = list_createiter (files);
 
@@ -72,7 +66,7 @@ void initialize_index(char *root_dir)
 
         words = list_create (mystrcmp);
         tokenize_file (fullpath, words);
-        index_add_document (idx, document, relpath, words);
+        index_add_document (idx, relpath, words);
 
         free (fullpath);
 
@@ -83,7 +77,7 @@ void initialize_index(char *root_dir)
     list_destroy (files);
 
     index_find(idx, "touch");
-    test(document);
+
 }
 
 void main_program_loop()
@@ -98,7 +92,7 @@ void main_program_loop()
     {
         char *query = ui_main(idx);
         search_result_t *res = index_find(idx, query);
-        ui_result(res, document);
+        ui_result(res);
     }
 }
 

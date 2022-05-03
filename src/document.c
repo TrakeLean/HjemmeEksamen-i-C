@@ -19,8 +19,5 @@ document_t *document_create()
 
 void document_destroy(document_t *document)
 {
-    free(document->hash);
-    free(document->name);
-    free(document->words);
     free(document);
 }

@@ -297,12 +297,12 @@ static void ui_display_results_content(char **content, int content_length, searc
 }
 
 
-void ui_result(search_result_t *res, document_t *document)
+void ui_result(search_result_t *res)
 {
     int row, c;
     
-    char **content = result_get_content(res, document);
-    int content_length = result_get_content_length(res, document);
+    char **content = result_get_content(res);
+    int content_length = result_get_content_length(res);
     search_hit_t *cur_pos = result_next(res);
 
     row = getmaxy(stdscr);
@@ -334,8 +334,8 @@ void ui_result(search_result_t *res, document_t *document)
 
         if (cur_pos == NULL)
         {
-            content = result_get_content(res, document);
-            content_length = result_get_content_length(res, document);
+            content = result_get_content(res);
+            content_length = result_get_content_length(res);
             if (content == NULL)
             {
 

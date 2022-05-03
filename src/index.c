@@ -13,8 +13,9 @@
  */ 
 struct index
 {
-    map_t* hash, *doc;
+    map_t* hash;
     list_t* linkl;
+    search_result_t* res;
 };
 
 /*
@@ -23,6 +24,7 @@ struct index
  */
 struct search_result
 {
+    document_t* document;
     list_t* linkl;
     int size;
 };
@@ -69,16 +71,17 @@ void index_destroy(index_t *index)
  * Adds all the words from the given document to the given index.
  * This function is responsible for deallocating the list and the document name after use.
  */
-void index_add_document(index_t *idx, document_t *document, char *document_name, list_t *words)
+void index_add_document(index_t *idx, char *document_name, list_t *words)
 {
     list_iter_t *iter;
     search_result_t *search_result = malloc(sizeof(search_result_t));
     list_t *combo;
 
+    search_result->document = document_create();
     // Store document data for later
-    // list_addlast(document->name, document_name);
-    // document->words = words;
-    // map_put(document->hash, document_name, words);
+    list_addlast(search_result->document->name, document_name);
+    search_result->document->words = words;
+    map_put(search_result->document->hash, document_name, words);
 
     int placement = 0;
     iter = list_createiter (words);
@@ -107,6 +110,7 @@ void index_add_document(index_t *idx, document_t *document, char *document_name,
     //printf("%s",word);
     //printf("");
     }
+    result_get_content(search_result);
     list_destroyiter(iter);
 }
 
@@ -150,13 +154,13 @@ search_result_t *index_find(index_t *idx, char *query)
         list_destroyiter(iter);
         list_destroy(list);
 
-        return search_result;
+        //return search_result;
     }
     else{
         printf("the word \"%s\" was not found in your document\n", query);
         search_result->linkl = NULL;
     }
-    //return search_result;
+    return search_result;
 }
 
 
@@ -171,51 +175,30 @@ char *autocomplete(index_t *idx, char *input, size_t size)
     return NULL;
 }
 
-void test(document_t *document)
-{
-    result_get_content(NULL, document);
-}
-
-
 /* 
  * Return the content of the current document.
  * Subsequent calls to this function should return the next document.
  * This function should only be called once for each document.
  * This function should return NULL if there are no more documents.
  */
-char **result_get_content(search_result_t *res, document_t *document)
+char **result_get_content(search_result_t *res)
 {
-    list_iter_t *iter;
+    list_iter_t *docu_iter, *word_iter;
     list_t *list;
 
+    //printf("\n%s", list_next(res->document->name));
+    res->document->current = list_next(res->document->name);
 
-    iter = list_createiter(document->name);
+    printf("%s\n",res->document->name);
+    //docu_iter = list_createiter(res->document->name);
+    // list = map_get(res->document->hash, list_next(docu_iter));
+    // word_iter = list_createiter(list);
 
-    while (list_hasnext(iter))
-    {
-        printf("%s\n", list_next(document->name));
-        printf("ASD");
-    }
-
-    //char *name = list_next(document->name);
-    //iter = list_createiter(map_get(document->hash, name));
-    // while (list_hasnext(iter))
+    // while (list_hasnext(word_iter))
     // {
-    //     printf("%s", list_next(iter));
+    //     printf("%s", list_next(word_iter));
     // }
 
-    
-    
-    // printf("%s",list_next(document->name));
-    // iter = list_createiter(document->name);
-    // while (list_hasnext(iter))
-    // {
-    //     char *word = list_next(iter);
-    //     printf("%s",word);
-    // }
-    // char *test[50] = {"hei du er kul", "takk"};
-    // return *test;
-    // printf("%s",list_next(document->name));
     return NULL;
 }
 
@@ -224,7 +207,7 @@ char **result_get_content(search_result_t *res, document_t *document)
  * Get the length of the current document.
  * Subsequent calls should return the length of the same document.
  */
-int result_get_content_length(search_result_t *res, document_t *document)
+int result_get_content_length(search_result_t *res)
 {
     return 50;
 }

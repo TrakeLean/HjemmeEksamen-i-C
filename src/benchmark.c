@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
         // Test inserts
         before = gettime();
-        index_add_document(idx, document, doc_name, words);
+        index_add_document(idx, doc_name, words);
         after = gettime();
         fprintf(stdout, "%d %llu %lf ", nwords, after - before, (double)(after - before) / nwords);
         avg_add += (double)(after - before) / nwords;

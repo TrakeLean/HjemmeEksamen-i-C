@@ -15,6 +15,8 @@ struct document
 {
     list_t* *name, *words;
     map_t* hash;
+    char** word_array;
+    char* current;
 };
 
 /*
