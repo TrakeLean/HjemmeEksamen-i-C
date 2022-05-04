@@ -65,8 +65,8 @@ index_t *index_create()
 void index_destroy(index_t *index)
 {
     // free all parts of the table, free index, index = null
-    printf("%s",list_next(index->res->document->name));
-    //free(index);
+    //printf("%s",list_next(index->res->document->name));
+    free(index);
 }
 
 
@@ -118,8 +118,6 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
         }
 
         document->word_array[word_place] = word;
-        
-
         word_place ++;
 
 
@@ -127,11 +125,10 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
     //printf("");
     }
     map_put(search_result->document->hash, document_name, document->word_array);
-    //trie_insert(idx->trie, )
 
-    //printf("%s ",document->word_array[0]);
-
-    result_get_content(search_result);
+    idx->res = search_result;
+    idx->trie = trie;
+    //result_get_content(search_result);
     list_destroyiter(iter);
 }
 
@@ -142,28 +139,27 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
 search_result_t *index_find(index_t *idx, char *query)
 {
     list_iter_t *iter;
-    search_result_t *search_result = malloc(sizeof(search_result_t));
     list_t *list;
 
     // Open map
     list = map_get(idx->hash,query);
     if (list != NULL){
         iter = list_createiter(list);
-        search_result->linkl = list_create(cmp_ints);
+        idx->res->linkl = list_create(cmp_ints);
         // Get word length
-        search_result->size = strlen(query);
+        idx->res->size = strlen(query);
         // Iterate through the list and push indexes to linkedlist
         while (list_hasnext(iter))
         {
             int *index_placement = list_next(iter);
-            list_addlast(search_result->linkl, index_placement);
+            list_addlast(idx->res->linkl, index_placement);
         }
         // Used for NULL (end) Checks
-        list_addlast(search_result->linkl, NULL);
+        list_addlast(idx->res->linkl, NULL);
 
         // Useless, used to see if code is working or not, has nothing
         // to do with the code it self.
-        iter = list_createiter(search_result->linkl);
+        iter = list_createiter(idx->res->linkl);
         // printf("Length: %i\n", length);
         // printf("Index");
         // while (list_hasnext(iter))
@@ -178,10 +174,10 @@ search_result_t *index_find(index_t *idx, char *query)
     }
     else{
         printf("the word \"%s\" was not found in your document\n", query);
-        search_result->linkl = NULL;
+        idx->res->linkl = NULL;
     }
     //result_get_content(search_result);
-    return search_result;
+    return idx->res;
 }
 
 
@@ -257,7 +253,7 @@ search_hit_t *result_next(search_result_t *res)
     else{
         search_hit->location = list_next(iter);
         search_hit->len = res->size;
-        printf("\nlocation: %d ---- length: %d\n",search_hit->location, search_hit->len);
+        //printf("\nlocation: %d ---- length: %d\n",search_hit->location, search_hit->len);
 
         return &search_hit->location;
     }
