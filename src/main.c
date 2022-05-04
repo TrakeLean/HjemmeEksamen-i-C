@@ -72,12 +72,9 @@ void initialize_index(char *root_dir)
 
         list_destroy (words);
     }
-
+    //index_find(idx, "touch");
     list_destroyiter (iter);
     list_destroy (files);
-
-    index_find(idx, "touch");
-
 }
 
 void main_program_loop()

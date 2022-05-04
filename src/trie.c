@@ -152,7 +152,33 @@ int trie_insert(trie_t *trie, char *key, void *value)
 
 char *trie_find(trie_t *trie, char *key)
 {
-    // Implement this to work with your design.
+    node_t *iter = trie->root;
+
+    for (int i = 0; key[i] != '\0'; i++){
+        if (iter == NULL){
+            return NULL;
+        }
+    }
+    if (iter->key != NULL){
+        return iter->key;
+    }
+    int i;
+    while (iter != NULL)
+    {
+        if (isleaf(iter)){
+            return iter->key;
+        }
+        else{
+            for (int i = 0; i < TRIE_RADIX; i++){
+                if (iter->children[i] != NULL)
+                {
+                    iter = iter->children[i];
+                    break;
+                }
+                
+            }
+        }
+    }
     return NULL;
 }
 
