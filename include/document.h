@@ -17,6 +17,7 @@ struct document
     map_t* hash;
     char** word_array;
     char* current;
+    int size;
 };
 
 /*

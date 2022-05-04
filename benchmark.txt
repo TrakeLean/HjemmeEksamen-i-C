@@ -1,21 +1,21 @@
 N Words|Time(µs)|Time/Word(µs)|Search Hit Time(µs)|Search Miss Time(µs)
-10000 3402 0.340200 117 the word "noexist" was not found in your document
-6
-20000 6482 0.324100 228 the word "noexist" was not found in your document
-1
-40000 9902 0.247550 1277 the word "noexist" was not found in your document
-1
-80000 14413 0.180163 850 the word "noexist" was not found in your document
-1
-160000 20696 0.129350 1181 the word "noexist" was not found in your document
+10000 3984 0.398400 842 the word "noexist" was not found in your document
+12
+20000 7127 0.356350 989 the word "noexist" was not found in your document
+3
+40000 9960 0.249000 1377 the word "noexist" was not found in your document
 0
-320000 39368 0.123025 6182 the word "noexist" was not found in your document
-2
-640000 75599 0.118123 6615 the word "noexist" was not found in your document
-2
-1280000 156876 0.122559 20374 the word "noexist" was not found in your document
+80000 14556 0.181950 652 the word "noexist" was not found in your document
 1
-2560000 307634 0.120170 43296 the word "noexist" was not found in your document
+160000 20439 0.127744 985 the word "noexist" was not found in your document
+0
+320000 39426 0.123206 6124 the word "noexist" was not found in your document
+1
+640000 75696 0.118275 8782 the word "noexist" was not found in your document
+0
+1280000 160331 0.125259 30128 the word "noexist" was not found in your document
 2
-5120000 645878 0.126148 114810 the word "noexist" was not found in your document
-2
+2560000 308333 0.120443 42126 the word "noexist" was not found in your document
+1
+5120000 643946 0.125771 88119 the word "noexist" was not found in your document
+1

@@ -17,7 +17,6 @@ struct index
     list_t* linkl;
     search_result_t* res;
     trie_t* trie;
-    int* tall;
 };
 
 /*
@@ -29,7 +28,8 @@ struct search_result
     document_t* document;
     list_t* linkl;
     char** curr_array;
-    int size;
+    int curr_size;
+    int word_size;
 };
 
 static inline int cmp_ints(void *a, void *b)
@@ -84,12 +84,11 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
     document->word_array = malloc(sizeof(char*)*list_size(words));
     list_t *combo;
 
-    idx->tall = 10;
+    search_result->curr_size = list_size(words);
+
     search_result->document = document_create();
     // Store document data for later
     list_addlast(search_result->document->name, document_name);
-    // search_result->document->words = words;
-    // map_put(search_result->document->hash, document_name, words);
 
     int word_place = 0;
     int placement = 0;
@@ -128,7 +127,6 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
 
     idx->res = search_result;
     idx->trie = trie;
-    //result_get_content(search_result);
     list_destroyiter(iter);
 }
 
@@ -147,7 +145,7 @@ search_result_t *index_find(index_t *idx, char *query)
         iter = list_createiter(list);
         idx->res->linkl = list_create(cmp_ints);
         // Get word length
-        idx->res->size = strlen(query);
+        idx->res->word_size = strlen(query);
         // Iterate through the list and push indexes to linkedlist
         while (list_hasnext(iter))
         {
@@ -170,13 +168,11 @@ search_result_t *index_find(index_t *idx, char *query)
         list_destroyiter(iter);
         list_destroy(list);
 
-        //return search_result;
     }
     else{
         printf("the word \"%s\" was not found in your document\n", query);
         idx->res->linkl = NULL;
     }
-    //result_get_content(search_result);
     return idx->res;
 }
 
@@ -204,21 +200,8 @@ char *autocomplete(index_t *idx, char *input, size_t size)
  */
 char **result_get_content(search_result_t *res)
 {
-    list_iter_t *docu_iter, *word_iter;
-    list_t *list;
-
     res->document->current = list_next(res->document->name);
-
     res->curr_array = map_get(res->document->hash, res->document->current);
-    
-    int test = 0;
-    
-    while (test < 10)
-    {
-        printf("%s", res->curr_array[test]);
-        test++;
-    }
-    printf("\n");
     
     return res->curr_array;
 }
@@ -230,7 +213,7 @@ char **result_get_content(search_result_t *res)
  */
 int result_get_content_length(search_result_t *res)
 {
-    return 50;
+    return res->curr_size;
 }
 
 
@@ -252,7 +235,7 @@ search_hit_t *result_next(search_result_t *res)
     }
     else{
         search_hit->location = list_next(iter);
-        search_hit->len = res->size;
+        search_hit->len = res->word_size;
         //printf("\nlocation: %d ---- length: %d\n",search_hit->location, search_hit->len);
 
         return &search_hit->location;
