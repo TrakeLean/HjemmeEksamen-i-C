@@ -93,7 +93,6 @@ void main_program_loop()
     }
 }
 
-
 int main(int argc, char **argv)
 {
     // if (argc != 2)
@@ -106,8 +105,8 @@ int main(int argc, char **argv)
     char *root_dir = "data2";
     initialize_index(root_dir);
 
-    //ui_init();
-    //main_program_loop();
+    ui_init();
+    main_program_loop();
 
     return 0;
 }

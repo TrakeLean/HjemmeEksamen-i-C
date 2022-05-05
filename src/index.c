@@ -27,6 +27,7 @@ struct search_result
 {
     document_t* document;
     list_t* linkl;
+    list_iter_t* next_word_iter;
     char** curr_array;
     int curr_size;
     int word_size;
@@ -85,44 +86,44 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
     list_t *combo;
 
     search_result->curr_size = list_size(words);
-
     search_result->document = document_create();
+
     // Store document data for later
     list_addlast(search_result->document->name, document_name);
 
+    // viser hvor vi er i teksten
     int word_place = 0;
+    // Sier hvor vi er nederst til høyre
     int placement = 0;
+
+
     iter = list_createiter (words);
     // Iterate through list of files
     while (list_hasnext(iter))
     {
-        placement ++;
         // Iterate through words in file
         char *word = list_next(iter);
-        // "SKIP" spaces
-        if (word == " " || word == "\0" || word == "\n"){
-            placement --;
-        }
+        // Add word in array for "result_get_content" function
+        document->word_array[word_place] = word;
+        // "SKIP" spaces,newlines and null terminations
+        // if (word == " " || word == "\0" || word == "\n"){
+        //     placement --;
+        // }
         // Create linkedlist for duplicate words
         combo = list_create(cmp_ints);
         // Push word last in linkedlist if the map already contains the word
         if (map_haskey(idx->hash, word)){
             list_addlast(map_get(idx->hash,word), placement);
-
         }
         // Create new linkedlist if map does not containt the word
         else{
             list_addfirst(combo,placement);
             map_put(idx->hash,word, combo);
         }
-
-        document->word_array[word_place] = word;
+        placement ++;
         word_place ++;
-
-
-    //printf("%s",word);
-    //printf("");
     }
+    // Hashmap used to find words in each document called by document name
     map_put(search_result->document->hash, document_name, document->word_array);
 
     idx->res = search_result;
@@ -153,18 +154,8 @@ search_result_t *index_find(index_t *idx, char *query)
             list_addlast(idx->res->linkl, index_placement);
         }
         // Used for NULL (end) Checks
-        list_addlast(idx->res->linkl, NULL);
+        //list_addlast(idx->res->linkl, NULL);
 
-        // Useless, used to see if code is working or not, has nothing
-        // to do with the code it self.
-        iter = list_createiter(idx->res->linkl);
-        // printf("Length: %i\n", length);
-        // printf("Index");
-        // while (list_hasnext(iter))
-        // {
-        //     printf(" - %i", list_next(iter));
-        // }
-        // printf("\n");
         list_destroyiter(iter);
         list_destroy(list);
 
@@ -173,7 +164,15 @@ search_result_t *index_find(index_t *idx, char *query)
         printf("the word \"%s\" was not found in your document\n", query);
         idx->res->linkl = NULL;
     }
+    // iter = list_createiter(idx->res->linkl);
+    // while (list_hasnext(iter))
+    // {
+    //     printf(" - %i", list_next(iter));
+    // }
+
+    idx->res->next_word_iter = list_createiter(idx->res->linkl);
     return idx->res;
+
 }
 
 
@@ -185,10 +184,6 @@ search_result_t *index_find(index_t *idx, char *query)
 
 char *autocomplete(index_t *idx, char *input, size_t size)
 {
-    trie_t* trie;
-    trie_find(idx->trie, input);
-    
-
     return NULL;
 }
 
@@ -228,16 +223,17 @@ search_hit_t *result_next(search_result_t *res)
     search_hit_t *search_hit = malloc(sizeof(search_hit_t));
     list_iter_t *iter;
 
-    iter = list_createiter(res->linkl);
+    printf(" %s", res->document->current);
+    iter = res->next_word_iter;
 
     if (res == NULL){
-        return search_hit;
+        return NULL;
     }
     else{
         search_hit->location = list_next(iter);
-        search_hit->len = res->word_size;
+        printf(" - %i", search_hit->location);
         //printf("\nlocation: %d ---- length: %d\n",search_hit->location, search_hit->len);
 
-        return &search_hit->location;
     }
+    return &search_hit->location;
 }

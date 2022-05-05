@@ -176,7 +176,7 @@ int test_index()
     sigsetjmp(jbuf, !0);
     if (catch == true)
     {
-        sr = index_find(idx, "frogman");
+        sr = index_find(idx, "hamlet");
     }
 
     if (caught_segfault == true)
