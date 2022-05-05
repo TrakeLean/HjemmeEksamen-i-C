@@ -11,7 +11,6 @@ document_t *document_create()
 {
     document_t *document = malloc(sizeof(document_t));
     document->hash = map_create(strcmp,djb2);
-    document->name = list_create(strcmp);
     document->words = list_create(strcmp);
     return document;
 

@@ -13,7 +13,7 @@ typedef struct document document_t;
 
 struct document
 {
-    list_t* *name, *words;
+    list_t* words;
     map_t* hash;
     char** word_array;
     char* current;
