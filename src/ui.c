@@ -241,14 +241,16 @@ char *ui_main(index_t *idx)
 }
 
 
-static void ui_display_results_help(int rows, search_hit_t *cur_pos)
+static void ui_display_results_help(int rows, search_hit_t *cur_pos,int curr)
 {
     move(rows-1, 0);
     printw("HOME - Go back to search\t");
     printw("ENTER - Next result\t");
     if (cur_pos != NULL)
     {
-        printw("CURRENT WORD: %d", cur_pos->location);
+        printw("CURRENT WORD: %d", cur_pos->word_placement);
+        //printw("\tCURRENT WORD: %d", cur_pos->location);
+        printw("\tWORDS FOUND: %d/%d", curr,cur_pos->words_found);
     }
         
     move(0, 0);
@@ -299,7 +301,7 @@ static void ui_display_results_content(char **content, int content_length, searc
 
 void ui_result(search_result_t *res)
 {
-    int row, c;
+    int row, c, curr;
     
     char **content = result_get_content(res);
     int content_length = result_get_content_length(res);
@@ -308,7 +310,7 @@ void ui_result(search_result_t *res)
     row = getmaxy(stdscr);
     clear();
 
-    ui_display_results_help(row, cur_pos);
+    ui_display_results_help(row, cur_pos, curr);
 
     if (content == NULL || cur_pos == NULL)
     {
@@ -328,6 +330,7 @@ void ui_result(search_result_t *res)
             case KEY_ENTER:
             case '\n':
                 clear();
+                curr ++;
                 cur_pos = result_next(res);
                 break;
         }
@@ -336,7 +339,8 @@ void ui_result(search_result_t *res)
         {
             content = result_get_content(res);
             content_length = result_get_content_length(res);
-            printw("End of current document");
+            printw("END OF CURRENT DOCUMENT - PRESS ENTER TO SEARCH NEXT DOCUMENT");
+            curr = 0;
             if (content == NULL)
             {
                 clear();
@@ -348,7 +352,7 @@ void ui_result(search_result_t *res)
         }
         else
         {
-            ui_display_results_help(row, cur_pos);
+            ui_display_results_help(row, cur_pos, curr);
             ui_display_results_content(content, content_length, cur_pos);
         }
         
