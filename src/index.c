@@ -96,7 +96,6 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
     // Store document data for later
     list_addlast(idx->temp_all_doc_names, document_name);
     // viser hvor vi er i teksten
-    int word_place = 0;
     // Sier hvor vi er nederst til høyre
     int placement = 0;
 
@@ -109,7 +108,7 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
         // Iterate through words in file
         char *word = list_next(iter);
         // Add word in array for "result_get_content" function
-        document->word_array[word_place] = word;
+        document->word_array[placement] = word;
         // "SKIP" spaces,newlines and null terminations
         // if (word == " " || word == "\0" || word == "\n"){
         //     placement --;
@@ -126,7 +125,6 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
             map_put(idx->hash,word, combo);
         }
         placement ++;
-        word_place ++;
     }
     // Hashmap inputing every word into an array for result_get_content
     map_put(idx->array_hash, document_name, document->word_array);
@@ -170,29 +168,17 @@ search_result_t *index_find(index_t *idx, char *query)
 
         list_destroyiter(iter);
         list_destroy(list);
+        // Iterators used by result
+        idx->res->next_word_iter = list_createiter(idx->res->words_found);
+        idx->res->next_docu_iter = list_createiter(idx->res->all_documents);
+        idx->res->next_size_iter = list_createiter(idx->res->size_list);
 
     }
     else{
-        printf("the word \"%s\" was not found in your document\n", query);
-        idx->res->words_found = NULL;
+        //printf("the word \"%s\" was not found in your document\n", query);
+        idx->res = NULL;
     }
-    iter = list_createiter(idx->res->words_found);
-    while (list_hasnext(iter))
-    {
-        printf(" - %i", list_next(iter));
-    }
-    printf("\n");
-
-
-
-    //result_get_content(idx->res);
-
-    // Iterators used by result
-    idx->res->next_word_iter = list_createiter(idx->res->words_found);
-    idx->res->next_docu_iter = list_createiter(idx->res->all_documents);
-    idx->res->next_size_iter = list_createiter(idx->res->size_list);
     return idx->res;
-
 }
 
 
@@ -265,15 +251,16 @@ search_hit_t *result_next(search_result_t *res)
     list_iter_t *iter;
 
     iter = res->next_word_iter;
+    int curr_word = list_next(iter);
 
-    if (list_hasnext(iter)== NULL){
-        search_hit = NULL;
-        return search_hit;
+    if (curr_word == NULL){
+        //char curr_word = list_next(iter);
+        return NULL;
     }
     else{
-        search_hit->location = list_next(iter);
+        search_hit->location = curr_word;
         search_hit->len = res->word_size;
-        //printf(" - %i", search_hit->location);
+        printf(" - %i", search_hit->location);
         //printf("\nlocation: %d ---- length: %d\n",search_hit->location, res->word_size);
         return search_hit;
     }

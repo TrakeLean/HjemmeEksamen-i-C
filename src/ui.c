@@ -336,9 +336,10 @@ void ui_result(search_result_t *res)
         {
             content = result_get_content(res);
             content_length = result_get_content_length(res);
+            printw("End of current document");
             if (content == NULL)
             {
-
+                clear();
                 attron(COLOR_PAIR(1));
                 printw("END OF RESULTS - PRESS HOME TO GO BACK");
                 attroff(COLOR_PAIR(1));
