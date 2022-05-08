@@ -158,7 +158,7 @@ search_result_t *index_find(index_t *idx, char *query)
 {
     list_iter_t *iter;
     list_t *list;
-    return NULL;
+
     // Open map
     list = map_get(idx->hash,query);
     if (list != NULL){
@@ -194,14 +194,11 @@ search_result_t *index_find(index_t *idx, char *query)
         list_addlast(idx->res->list_number_found, found);
 
         list_destroyiter(iter);
-        list_destroy(list);
         // Iterators used by result
         idx->res->next_word_iter = list_createiter(idx->res->words_found);
         idx->res->next_correct_iter = list_createiter(idx->res->words_found_correct);
         idx->res->next_docu_iter = list_createiter(idx->res->all_documents);
         idx->res->next_size_iter = list_createiter(idx->res->size_list);
-
-
     }
     else{
         idx->res = NULL;
@@ -250,9 +247,6 @@ char **result_get_content(search_result_t *res)
     {
         return NULL;
     }
-    
-
-
 }
 
 
