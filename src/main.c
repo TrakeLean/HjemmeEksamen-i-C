@@ -66,13 +66,14 @@ void initialize_index(char *root_dir)
 
         words = list_create (mystrcmp);
         tokenize_file (fullpath, words);
+        
         index_add_document (idx, relpath, words);
 
         free (fullpath);
 
         list_destroy (words);
     }
-    index_find(idx, "touch");
+    //index_find(idx, "touch");
     list_destroyiter (iter);
     list_destroy (files);
 }
@@ -105,8 +106,8 @@ int main(int argc, char **argv)
     char *root_dir = "data2";
     initialize_index(root_dir);
 
-    //ui_init();
-    //main_program_loop();
+    ui_init();
+    main_program_loop();
 
     return 0;
 }

@@ -153,32 +153,44 @@ int trie_insert(trie_t *trie, char *key, void *value)
 char *trie_find(trie_t *trie, char *key)
 {
     node_t *iter = trie->root;
+    int size = strlen(key);
 
+    // Add every letter we've writen so far eg. "tou" go t->o->u and search from there below
     for (int i = 0; key[i] != '\0'; i++){
-        if (iter == NULL){
+        if (iter->children[ASCII_TO_IDX(key[i])] != NULL)
+        {
+            iter = iter->children[ASCII_TO_IDX(key[i])];
+        }
+        else
+        {
             return NULL;
         }
     }
-    if (iter->key != NULL){
-        return iter->key;
-    }
-    int i;
+
     while (iter != NULL)
     {
-        if (isleaf(iter)){
-            return iter->key;
-        }
-        else{
-            for (int i = 0; i < TRIE_RADIX; i++){
-                if (iter->children[i] != NULL)
-                {
-                    iter = iter->children[i];
-                    break;
-                }
-                
+
+        // Iterate through the alphabet and pick the first letter found
+        for (int i = 0; TRIE_RADIX; i++){
+            if (iter->children[i] != NULL)
+            {
+                iter = iter->children[i];
+                break;
             }
-        }
+            // if its a leaf node it means we've hit the end of the word
+            if (isleaf(iter))
+            {
+                return iter->key;
+            }
+        }      
     }
-    return NULL;
+return NULL;
 }
+
+
+    
+
+
+    
+
 
