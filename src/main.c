@@ -66,13 +66,14 @@ void initialize_index(char *root_dir)
 
         words = list_create (mystrcmp);
         tokenize_file (fullpath, words);
+        
         index_add_document (idx, relpath, words);
 
         free (fullpath);
 
         list_destroy (words);
     }
-    //index_find(idx, "before");
+    //index_find(idx, "touch");
     list_destroyiter (iter);
     list_destroy (files);
 }

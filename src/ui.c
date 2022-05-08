@@ -250,7 +250,7 @@ static void ui_display_results_help(int rows, search_hit_t *cur_pos,int curr)
     {
         printw("CURRENT WORD: %d", cur_pos->word_placement);
         //printw("\tCURRENT WORD: %d", cur_pos->location);
-        printw("\tWORDS FOUND: %d/%d", curr,cur_pos->words_found);
+        printw("\t\tWORDS FOUND: %d/%d", curr,cur_pos->words_found);
     }
         
     move(0, 0);

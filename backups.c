@@ -20,3 +20,35 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
 
 
 search_result->document->word_array = malloc(sizeof(char*)*list_size(words));
+
+
+char *trie_find(trie_t *trie, char *key)
+{
+    node_t *iter = trie->root;
+
+    for (int i = 0; key[i] != '\0'; i++){
+        if (iter == NULL){
+            return NULL;
+        }
+    }
+    if (iter->key != NULL){
+        return iter->key;
+    }
+    int i;
+    while (iter != NULL)
+    {
+        if (isleaf(iter)){
+            return iter->key;
+        }
+        else{
+            for (int i = 0; i < TRIE_RADIX; i++){
+                if (iter->children[i] != NULL)
+                {
+                    iter = iter->children[i];
+                }
+            }
+        }
+    }
+    return NULL;
+}
+
