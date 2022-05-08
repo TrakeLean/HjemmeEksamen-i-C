@@ -13,6 +13,7 @@
  */ 
 struct index
 {
+    // må lage egen hash for hvert dokument.
     map_t* hash, *array_hash, *hit_words;
     list_t* temp_all_doc_names, *temp_size_list;
     search_result_t* res;
@@ -105,7 +106,6 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
     int placement = 0;
     int correct_placement = 0;
 
-
     iter = list_createiter (words);
     // Iterate through words in file
     while (list_hasnext(iter))
@@ -133,7 +133,7 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
             list_addfirst(combo,placement);
             list_addlast(combo,correct_placement);
             map_put(idx->hash,word, combo);
-            trie_insert(idx->trie, word, strlen(word));
+            trie_insert(idx->trie, word, NULL);
         }
         placement ++;
     }
@@ -169,9 +169,9 @@ search_result_t *index_find(index_t *idx, char *query)
         // Get word length
         idx->res->word_size = strlen(query);
         int found = 0;
-        // Iterate through the list and push indexes to linkedlist
         int end = 0;
 
+        // Iterate through the list and push placements to linkedlist
         while (list_hasnext(iter))
         {
             int index_placement = list_next(iter);
