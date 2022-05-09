@@ -73,7 +73,7 @@ void initialize_index(char *root_dir)
 
         list_destroy (words);
     }
-    //index_find(idx, "hamlet");
+    //index_find(idx, "tarek");
     list_destroyiter (iter);
     list_destroy (files);
 }

@@ -17,6 +17,7 @@ struct document
 {
     map_t* hash;
     list_t* words, *word_placements, *word_placements_correct;
+    list_iter_t* current;
     char** word_array;
     char* name;
     int size, words_found;

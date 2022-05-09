@@ -1,0 +1,30 @@
+[INFO][src/main.c 65]: Indexing data2/navn.txt
+Key: Tarek       Value: 1004564656
+Key:     Value: 1004565904
+Key: 
+         Value: 1004566736
+Key: /navn.txt   Value: 1004564304
+
+
+
+
+
+[INFO][src/main.c 65]: Indexing data2/navn.txt
+Key: Tarek       Value: 1306554048
+Key:     Value: 1306555296
+Key: tArek       Value: 1306555424
+Key: taRek       Value: 1306555616
+Key: tarEk       Value: 1306555808
+Key: TareK       Value: 1306556000
+Key: tarek       Value: 1306556192
+Key: tarek       Value: 1306556192
+Key: TareK       Value: 1306556000
+Key: tarEk       Value: 1306555808
+Key: taRek       Value: 1306555616
+Key: tArek       Value: 1306555424
+Key: Tarek       Value: 1306554048
+Key:     Value: 1306555296
+Key: 
+         Value: 1306556448
+Key: 
+         Value: 1306556448

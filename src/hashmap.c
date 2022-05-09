@@ -149,10 +149,11 @@ void map_put(map_t *map, void *key, void *value)
         map->size++;
         if (map->size >= map->numbuckets)
             growmap(map);
+        printf("Key: %s\t Value: %i\n", key, value);
     }
     else
     {
-        e->value = value;   
+        e->value = value;
     }
 }
 
