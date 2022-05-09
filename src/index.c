@@ -13,10 +13,9 @@
  */ 
 struct index
 {
-    // må lage egen hash for hvert dokument.
-    map_t* hash, *array_hash, *hit_words;
-    list_t* temp_all_doc_names, *temp_size_list, *document_data;
-    search_result_t* res;
+    map_t* hash;
+    list_t* document_data;
+    search_result_t* result;
     trie_t* trie;
 };
 
@@ -27,9 +26,9 @@ struct index
 struct search_result
 {
     document_t* document;
-    list_iter_t* docu_iter, *size_iter, *hit_iter;
+    list_iter_t* docu_iter;
     char** array;
-    int curr_number_word_found, word_size;
+    int words_found, word_size, size;
 };
 
 static inline int cmp_ints(void *a, void *b)
@@ -54,11 +53,7 @@ index_t *index_create()
 {
     index_t *index = malloc(sizeof(index_t));
     index->hash = map_create(cmp_strs,djb2);
-    index->array_hash = map_create(cmp_strs,djb2);
-    index->hit_words = map_create(cmp_strs,djb2);
     index->document_data = list_create(cmp_strs);
-    index->temp_all_doc_names = list_create(cmp_strs);
-    index->temp_size_list = list_create(cmp_strs);
     index->trie = trie_create();
     return index;
 }
@@ -72,11 +67,8 @@ void index_destroy(index_t *index)
 {
     // Free from index
     map_destroy(index->hash, NULL, NULL);
-    map_destroy(index->array_hash, NULL, NULL);
-    map_destroy(index->hit_words, NULL, NULL);
-    list_destroy(index->temp_all_doc_names);
-    list_destroy(index->temp_size_list);
     list_destroy(index->document_data);
+    trie_destroy(index->trie);
     free(index);
 }
 
@@ -133,7 +125,7 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
         placement++;
     }
     list_addlast(idx->document_data, document);
-
+    list_destroyiter(word_iter);
 }
 
 /*
@@ -142,16 +134,17 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
  */
 search_result_t *index_find(index_t *idx, char *query)
 {
-    list_iter_t *docu_iter, *iter, *iter2, *iter3;
+    list_iter_t *docu_iter, *list_iter, *iter, *iter2;
     search_result_t *result = malloc(sizeof(search_result_t));
     list_t *list;
 
 
     docu_iter = list_createiter(idx->document_data);
+   
     while (list_hasnext(docu_iter))
     {
         result->document = list_next(docu_iter);
-
+        
         result->document->word_placements = list_create(cmp_ints);
         result->document->word_placements_correct = list_create(cmp_ints);
         // Get word length
@@ -164,49 +157,63 @@ search_result_t *index_find(index_t *idx, char *query)
             list_addlast(result->document->word_placements_correct, NULL);
         }
         else{
-            iter = list_createiter(list);
-            // Iterate through the list and push placements to linkedlist
-            while (list_hasnext(iter))
+            list_iter = list_createiter(list);
+            // Iterate through the list and pures.sh placements to linkedlist
+            while (list_hasnext(list_iter))
             {
-                int placement = list_next(iter);
-                int correct_placement = list_next(iter);
+                int placement = list_next(list_iter);
+                int correct_placement = list_next(list_iter);
                 list_addlast(result->document->word_placements, placement);
                 list_addlast(result->document->word_placements_correct, correct_placement);
                 found ++;
             }
             result->document->words_found = found;
+            // Tells us where the list ends
+            list_addlast(result->document->word_placements, NULL);
+            list_addlast(result->document->word_placements_correct, NULL);
         
-            list_destroyiter(iter);
+            list_destroyiter(list_iter);
         }
     }
 
-    iter = list_createiter(idx->document_data);
-    while (list_hasnext(iter))
-    {
-    result->document = list_next(iter);
+    // iter = list_createiter(idx->document_data);
+    // while (list_hasnext(iter))
+    // {
+    // result->document = list_next(iter);
 
-    printf("\n%s\n", result->document->name);
-    // PRINT OUT COMPUTER PLACEMENTS
-    iter2 = list_createiter(result->document->word_placements);
-    printf("Computer placement ");
-        while (list_hasnext(iter2))
-        {
-            printf("- %i ", list_next(iter2));
-        }
-        printf("\n");
-    // PRINT OUT HUMAN PLACEMENTS FOUND
-    iter3 = list_createiter(result->document->word_placements_correct);
-    printf("Human placement ");
-        while (list_hasnext(iter3))
-        {
-            printf("- %i ", list_next(iter3));
-        }
-        printf("\n");
-        printf("Words found: %i\n", result->document->words_found);
-    }
+    // printf("\n%s\n", result->document->name);
+    // // PRINT OUT COMPUTER PLACEMENTS
+    // iter2 = list_createiter(result->document->word_placements);
+    // printf("Computer placement ");
+    //     while (list_hasnext(iter2))
+    //     {
+    //         printf("- %i ", list_next(iter2));
+    //     }
+    //     printf("\n");
+    // // PRINT OUT HUMAN PLACEMENTS FOUND
+    // iter2 = list_createiter(result->document->word_placements_correct);
+    // printf("Human placement ");
+    //     while (list_hasnext(iter2))
+    //     {
+    //         printf("- %i ", list_next(iter2));
+    //     }
+    //     printf("\n");
+    //     printf("Words found: %i\n", result->document->words_found);
+    // }
 
-
-
+    // iter = list_createiter(idx->document_data);
+    // while (list_hasnext(iter))
+    // {
+    // result->document = list_next(iter);
+    //     for (int i = 0; i < result->document->size; i++)
+    //     {
+    //         printf("%s", result->document->word_array[i]);
+    //     }
+    //     printf("\n");
+    // }
+    
+list_destroyiter(docu_iter);
+idx.result->docu_iter = list_createiter(idx->document_data);
 return result;
 }
 
@@ -232,9 +239,21 @@ char *autocomplete(index_t *idx, char *input, size_t size)
 char **result_get_content(search_result_t *res)
 {
 
-    if (res->document != NULL)
+    if (list_hasnext(res->docu_iter))
     {
-        return res->document->word_array;
+    // Get current document 
+    res->document = list_next(res->docu_iter);
+    // Get current size
+    res->size = res->document->size;
+    // Get current array based on document name
+    res->array = res->document->word_array;
+    // Get total words found
+    res->words_found = res->document->words_found;
+    if (res->document->words_found == 0)
+    {
+        return NULL;
+    }
+    return res->array;
     }
     else{
         return NULL;
@@ -248,13 +267,7 @@ char **result_get_content(search_result_t *res)
  */
 int result_get_content_length(search_result_t *res)
 {
-
-    if (res == NULL){
-    return NULL;
-    }
-    else{
-    return res->document->size;
-    }
+    return res->size;
 }
 
 
@@ -266,20 +279,19 @@ int result_get_content_length(search_result_t *res)
 search_hit_t *result_next(search_result_t *res)
 {
     search_hit_t *search_hit = malloc(sizeof(search_hit_t));
-    document_t *document;
 
+    search_hit->location = list_next(res->document->word_placements);
+    search_hit->word_placement = list_next(res->document->word_placements_correct);
 
-    if (res == NULL){
-        return NULL;
-    }
-
-    else{
-        search_hit->location = list_next(res->document->word_placements);
-        search_hit->word_placement = list_next(res->document->word_placements_correct);
-        search_hit->words_found = res->document->words_found;
-        search_hit->len = res->word_size;
-
+    // If curr_word and correct_word are equal it means that we have hit the end of a document
+    if (res->document->word_placements == res->document->word_placements_correct)
+    {
+        search_hit = NULL;
         return search_hit;
     }
-    return NULL;
+    else{
+        search_hit->words_found = res->document->words_found;
+        search_hit->len = res->word_size;
+        return search_hit;
+    }
 }

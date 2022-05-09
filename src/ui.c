@@ -357,8 +357,7 @@ void ui_result(search_result_t *res)
         }
         
     }
-    // makes program crash after searching multiple times
-    //free(res);
+    free(res);
     return;
 }
 
