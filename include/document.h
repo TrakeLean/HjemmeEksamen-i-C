@@ -3,8 +3,10 @@
 
 #include "index.h"
 #include "map.h"
-#include "printing.h"
-#include "trie.h"
+#include "index.h"
+
+
+
 
 /*
  * Struct that holds the documents name and words
@@ -13,11 +15,11 @@ typedef struct document document_t;
 
 struct document
 {
-    list_t* words;
     map_t* hash;
+    list_t* words, *word_placements, *word_placements_correct;
     char** word_array;
-    char* current;
-    int size;
+    char* name;
+    int size, words_found;
 };
 
 /*

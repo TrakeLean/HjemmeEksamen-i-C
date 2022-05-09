@@ -3,7 +3,7 @@
 
 #include "list.h"
 #include "trie.h"
-#include "document.h"
+
 
 typedef struct index index_t;
 

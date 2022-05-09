@@ -6,6 +6,8 @@
         "index.h": "c",
         "map.h": "c",
         "document.h": "c",
-        "trie.h": "c"
+        "trie.h": "c",
+        "printing.h": "c",
+        "search.h": "c"
     }
 }
