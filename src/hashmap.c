@@ -139,6 +139,8 @@ void map_put(map_t *map, void *key, void *value)
     int b = hash % map->numbuckets;
     mapentry_t *e = map->buckets[b];
 
+    //printf("CREATE-\tKey: \"%s\"\t Value: \"%i\"\n", key, value);
+    //printf("PUT   -\tKey: \"%s\"\t Value: \"%i\"\n", key, value);
     while (e != NULL && map->cmpfunc(key, e->key) != 0)
     {
         e = e->next;
@@ -149,7 +151,6 @@ void map_put(map_t *map, void *key, void *value)
         map->size++;
         if (map->size >= map->numbuckets)
             growmap(map);
-        printf("Key: %s\t Value: %i\n", key, value);
     }
     else
     {
@@ -169,10 +170,13 @@ int map_haskey(map_t *map, void *key)
     }
     if (e == NULL)
     {
+        //printf("\tKey: \"%s\" is not in this map\n", key);
         return 0;
     }
     else
     {
+        //printf("\tKey: \"%s\" is in this map\n", key);
+        //printf("HAS\tKey: \"%s\"\t Value: \"%i\"\t Hash: \"%lu\"\n", key, e->value, hash);
         return 1;
     }
 }
@@ -183,6 +187,7 @@ void *map_get(map_t *map, void *key)
     int b = hash % map->numbuckets;
     mapentry_t *e = map->buckets[b];
 
+    //printf("OPEN  -\tKey: \"%s\"\t Value: \"%i\"\t Hash: \"%lu\"\n", key, e->value, hash);
     while (e != NULL && map->cmpfunc(key, e->key) != 0)
     {
         e = e->next;

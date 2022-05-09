@@ -23,10 +23,6 @@ struct document
     int size, words_found;
 };
 
-/*
- * Locates memory for the document.
- */
-document_t *document_create();
 
 /*
  * Frees memory used by the document.

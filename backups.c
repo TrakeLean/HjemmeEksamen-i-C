@@ -115,3 +115,54 @@ void index_add_document(index_t *idx, char *document_name, list_t *words)
 
 }
 
+void index_add_document(index_t *idx, char *document_name, list_t *words)
+{
+    list_iter_t *word_iter;
+    document_t *document = document_create();
+    document->word_array = malloc(sizeof(char*)*list_size(words));
+    list_t* list;
+
+
+    // Store document data for later
+    document->name = document_name;
+    document->size = list_size(words);
+
+    int placement = 0;
+    int correct_placement = 0;
+    word_iter = list_createiter (words);
+
+    // Iterate through words in file
+    while (list_hasnext(word_iter))
+    {
+        char *word = list_next(word_iter);
+
+        correct_placement++;
+        // Add word in array for "result_get_content" function
+        document->word_array[placement] = word;
+        // "SKIP" spaces,newlines, null terminations, commas and periods
+        if (word == " " || word == "\0" || word == "\n")
+        {
+            correct_placement --;
+        }
+        // Push word last in linkedlist if the map already contains the word
+        if (map_haskey(document->hash, word))
+        {
+            list_addlast(map_get(document->hash,word), placement);
+            list_addlast(map_get(document->hash,word), correct_placement);
+
+        }
+        // Enter here if the word is not contained within the hashtable
+        else
+        {
+            // Create linkedlist incase of duplicate words
+            list = list_create(cmp_ints);
+            list_addfirst(list, placement);
+            list_addlast(list, correct_placement);
+            map_put(document->hash,word, list);
+            trie_insert(idx->trie, word, NULL);
+        }
+        placement++;
+    }
+    list_addlast(idx->document_data, document);
+    list_destroyiter(word_iter);
+}

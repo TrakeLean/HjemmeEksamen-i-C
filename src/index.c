@@ -1,5 +1,6 @@
 
 #include <string.h>
+#include <ctype.h>
 
 #include "index.h"
 #include "map.h"
@@ -28,6 +29,7 @@ struct search_result
     document_t* document;
     list_iter_t* docu_iter;
     char** array;
+    char* name;
     int words_found, word_size, size;
 };
 
@@ -52,8 +54,8 @@ static inline int cmp_strs(void *a, void *b)
 index_t *index_create()
 {
     index_t *index = malloc(sizeof(index_t));
-    index->result = malloc(sizeof(search_result_t));
     index->hash = map_create(cmp_strs,djb2);
+    index->result = malloc(sizeof(search_result_t));
     index->document_data = list_create(cmp_strs);
     index->trie = trie_create();
     return index;
@@ -73,90 +75,93 @@ void index_destroy(index_t *index)
     free(index);
 }
 
-
 /*
  * Adds all the words from the given document to the given index.
  * This function is responsible for deallocating the list and the document name after use.
  */
 void index_add_document(index_t *idx, char *document_name, list_t *words)
 {
-    list_iter_t *word_iter;
-    document_t *document = document_create();
-    list_t* list;
-    document->word_array = malloc(sizeof(char*)*list_size(words));
+    document_t* document = malloc(sizeof(document_t));
+    document->word_array = malloc(sizeof(char *) * list_size(words));
+    list_iter_t* docu_iter;
+    list_t *list;
 
-
+    // Create docuement map and list
+    document->hash = map_create(cmp_strs,djb2);
+    document->words = list_create(cmp_strs);
     // Store document data for later
     document->name = document_name;
     document->size = list_size(words);
 
     int placement = 0;
     int correct_placement = 0;
-    word_iter = list_createiter (words);
 
+    docu_iter = list_createiter(words);
     // Iterate through words in file
-    while (list_hasnext(word_iter))
+    while (list_hasnext(docu_iter))
     {
-        char *word = list_next(word_iter);
         correct_placement++;
+
+        char *word = list_next(docu_iter);
         // Add word in array for "result_get_content" function
         document->word_array[placement] = word;
         // "SKIP" spaces,newlines, null terminations, commas and periods
         if (word == " " || word == "\0" || word == "\n")
         {
-            correct_placement --;
+            correct_placement--;
         }
-        // Push word last in linkedlist if the map already contains the word
+        // Check if word is in map
         if (map_haskey(document->hash, word))
         {
-            list_addlast(map_get(document->hash, word), placement);
-            list_addlast(map_get(document->hash, word), correct_placement);
-
+            list_addlast(map_get(document->hash,word), placement);
+            list_addlast(map_get(document->hash,word), correct_placement);
         }
-        // Enter here if the word is not contained within the hashtable
-        else
-        {
-            // Create linkedlist incase of duplicate words
+        // Enter if the word isn't in the map
+        else{
             list = list_create(cmp_ints);
-            list_addfirst(list, placement);
+            list_addlast(list, placement);
             list_addlast(list, correct_placement);
             map_put(document->hash, word, list);
             trie_insert(idx->trie, word, NULL);
         }
-        placement++;
+        placement ++;
     }
     list_addlast(idx->document_data, document);
-    list_destroyiter(word_iter);
+    list_destroyiter(docu_iter);
+    //free(document_name);
 }
-
+        
+        
 /*
  * Finds a query in the documents in the index.
  * The result is returned as a search_result_t which is later used to iterate the results.
  */
 search_result_t *index_find(index_t *idx, char *query)
 {
-    list_iter_t *docu_iter, *list_iter, *iter, *iter2;
+    list_iter_t *docu_iter, *list_iter;
     list_t *list;
 
-
     docu_iter = list_createiter(idx->document_data);
-   
+
     while (list_hasnext(docu_iter))
     {
         idx->result->document = list_next(docu_iter);
-        
+
         idx->result->document->word_placements = list_create(cmp_ints);
         idx->result->document->word_placements_correct = list_create(cmp_ints);
         // Get word length
         idx->result->word_size = strlen(query);
         int found = 0;
+
         // Open map
-        list = map_get(idx->result->document->hash,query);
-        if (list == NULL){
+        list = map_get(idx->result->document->hash, query);
+        if (list == NULL)
+        {
             list_addlast(idx->result->document->word_placements, NULL);
             list_addlast(idx->result->document->word_placements_correct, NULL);
         }
-        else{
+        else
+        {
             list_iter = list_createiter(list);
             // Iterate through the list and pushes placements to linkedlist
             while (list_hasnext(list_iter))
@@ -165,59 +170,21 @@ search_result_t *index_find(index_t *idx, char *query)
                 int correct_placement = list_next(list_iter);
                 list_addlast(idx->result->document->word_placements, placement);
                 list_addlast(idx->result->document->word_placements_correct, correct_placement);
-                found ++;
+                found++;
             }
             idx->result->document->words_found = found;
             // Tells us where the list ends
             list_addlast(idx->result->document->word_placements, NULL);
             list_addlast(idx->result->document->word_placements_correct, NULL);
-        
+
             list_destroyiter(list_iter);
         }
     }
+    list_destroyiter(docu_iter);
+    idx->result->docu_iter = list_createiter(idx->document_data);
 
-    // iter = list_createiter(idx->document_data);
-    // while (list_hasnext(iter))
-    // {
-    // idx->result->document = list_next(iter);
-
-    // printf("\n%s\n", idx->result->document->name);
-    // // PRINT OUT COMPUTER PLACEMENTS
-    // iter2 = list_createiter(idx->result->document->word_placements);
-    // printf("Computer placement ");
-    //     while (list_hasnext(iter2))
-    //     {
-    //         printf("- %i ", list_next(iter2));
-    //     }
-    //     printf("\n");
-    // // PRINT OUT HUMAN PLACEMENTS FOUND
-    // iter2 = list_createiter(idx->result->document->word_placements_correct);
-    // printf("Human placement ");
-    //     while (list_hasnext(iter2))
-    //     {
-    //         printf("- %i ", list_next(iter2));
-    //     }
-    //     printf("\n");
-    //     printf("Words found: %i\n", idx->result->document->words_found);
-    // }
-
-    // iter = list_createiter(idx->document_data);
-    // while (list_hasnext(iter))
-    // {
-    // result->document = list_next(iter);
-    //     for (int i = 0; i < result->document->size; i++)
-    //     {
-    //         printf("%s", result->document->word_array[i]);
-    //     }
-    //     printf("\n");
-    // }
-    
-list_destroyiter(docu_iter);
-
-idx->result->docu_iter = list_createiter(idx->document_data);
-return idx->result;
+    return idx->result;
 }
-
 
 /*
  * Autocomplete searches the given trie for a word containing input.
@@ -249,6 +216,8 @@ char **result_get_content(search_result_t *res)
     res->document = list_next(res->docu_iter);
     // Get current size
     res->size = res->document->size;
+    // Get current document name
+    res->name = res->document->name;
     // Get current array based on document name
     res->array = res->document->word_array;
     return res->array;
@@ -256,7 +225,6 @@ char **result_get_content(search_result_t *res)
     else{
         return NULL;
     }
-    
 }
 
 
@@ -283,6 +251,7 @@ search_hit_t *result_next(search_result_t *res)
     search_hit->word_placement = list_next(res->document->word_placements_correct);
     search_hit->words_found = res->document->words_found;
     search_hit->len = res->word_size;
+    search_hit->document_name = res->name;
     /* if word_placements and word_placements_correct are 0 at the same time
      * it means that we have hit the end of the list.
      */

@@ -8,6 +8,7 @@
         "document.h": "c",
         "trie.h": "c",
         "printing.h": "c",
-        "search.h": "c"
+        "search.h": "c",
+        "algorithm": "c"
     }
 }

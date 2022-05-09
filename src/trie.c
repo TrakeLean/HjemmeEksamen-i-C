@@ -153,7 +153,6 @@ int trie_insert(trie_t *trie, char *key, void *value)
 char *trie_find(trie_t *trie, char *key)
 {
     node_t *iter = trie->root;
-    int size = strlen(key);
 
     // Add every letter we've writen so far eg. "tou" go t->o->u and search from there below
     for (int i = 0; key[i] != '\0'; i++){
