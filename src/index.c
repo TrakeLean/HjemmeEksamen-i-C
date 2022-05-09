@@ -239,15 +239,24 @@ char *autocomplete(index_t *idx, char *input, size_t size)
  */
 char **result_get_content(search_result_t *res)
 {
+    if (res == NULL)
+    {
+        return NULL;
+    }
+    else if (list_hasnext(res->docu_iter))
+    {
     // Get current document 
     res->document = list_next(res->docu_iter);
     // Get current size
     res->size = res->document->size;
     // Get current array based on document name
     res->array = res->document->word_array;
-
     return res->array;
-
+    }
+    else{
+        return NULL;
+    }
+    
 }
 
 
@@ -279,7 +288,7 @@ search_hit_t *result_next(search_result_t *res)
      */
     if (search_hit->location == 0 && search_hit->word_placement == 0)
     {
-        free(search_hit);
+        //free(search_hit);
         return NULL;
     }
     return search_hit;

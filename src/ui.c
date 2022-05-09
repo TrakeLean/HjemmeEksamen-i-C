@@ -357,7 +357,7 @@ void ui_result(search_result_t *res)
         }
         
     }
-    free(res);
+    //free(res);
     return;
 }
 
