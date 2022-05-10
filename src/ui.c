@@ -248,8 +248,8 @@ static void ui_display_results_help(int rows, search_hit_t *cur_pos, int curr)
     printw("ENTER - Next result\t");
     if (cur_pos != NULL)
     {
-        printw("CURRENT WORD: %d", cur_pos->word_placement);
-        //printw("\tCURRENT WORD: %d", cur_pos->location);
+        printw("HUMAN WORD: %d", cur_pos->word_placement);
+        printw(" COMPUTER WORD: %d", cur_pos->location);
         printw("\t\tWORDS FOUND: %d/%d", curr,cur_pos->words_found);
     }
         

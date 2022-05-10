@@ -73,6 +73,7 @@ void initialize_index(char *root_dir)
 
         list_destroy (words);
     }
+
     list_destroyiter (iter);
     list_destroy (files);
 }

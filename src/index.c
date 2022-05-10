@@ -181,6 +181,7 @@ search_result_t *index_find(index_t *idx, char *query)
             list_destroyiter(list_iter);
         }
     }
+
     list_destroyiter(docu_iter);
     idx->result->docu_iter = list_createiter(idx->document_data);
     return idx->result;

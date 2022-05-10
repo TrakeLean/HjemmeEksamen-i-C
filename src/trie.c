@@ -170,7 +170,7 @@ char *trie_find(trie_t *trie, char *key)
 
         /* Iterate through the alphabet(0-26) if "iter->children[i] != NULL" it means
          * that we hit the next letter alphabetically, we then enter that node and
-         * do that prosses until "isleaf" hits
+         * do that prosses until the letter has a key
          */
         for (int i = 0; TRIE_RADIX; i++)
         {
@@ -179,11 +179,12 @@ char *trie_find(trie_t *trie, char *key)
                 iter = iter->children[i];
                 break;
             }
-            // if isleaf hits, it means there are no more letters so we end here and return the key
-            if (isleaf(iter))
+            // If the key isn't null it means we have found a full word
+            if (iter->key != NULL)
             {
                 return iter->key;
-            }
+                break;
+            }     
         }
     }
     return NULL;
