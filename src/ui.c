@@ -256,7 +256,14 @@ static void ui_display_results_help(int rows, search_hit_t *cur_pos, int curr)
     move(0, 0);
 
     attron(COLOR_PAIR(2));
-    printw("SEARCH RESULTS FOR %s", cur_pos->document_name);
+    if (cur_pos == NULL)
+    {
+        printw("SEARCH RESULTS");
+    }
+    else{
+        printw("SEARCH RESULTS FOR %s", cur_pos->document_name);
+    }
+    
     attroff(COLOR_PAIR(2));
     refresh();
 }

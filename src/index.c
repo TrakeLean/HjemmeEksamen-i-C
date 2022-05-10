@@ -81,7 +81,7 @@ void index_destroy(index_t *index)
  */
 void index_add_document(index_t *idx, char *document_name, list_t *words)
 {
-    document_t* document = malloc(sizeof(document_t));
+    document_t* document = document_create();
     document->word_array = malloc(sizeof(char *) * list_size(words));
     list_iter_t* docu_iter;
     list_t *list;
@@ -182,7 +182,6 @@ search_result_t *index_find(index_t *idx, char *query)
     }
     list_destroyiter(docu_iter);
     idx->result->docu_iter = list_createiter(idx->document_data);
-
     return idx->result;
 }
 
@@ -206,21 +205,19 @@ char *autocomplete(index_t *idx, char *input, size_t size)
  */
 char **result_get_content(search_result_t *res)
 {
-    if (res == NULL)
-    {
+    if (res == NULL){
         return NULL;
     }
-    else if (list_hasnext(res->docu_iter))
-    {
-    // Get current document 
-    res->document = list_next(res->docu_iter);
-    // Get current size
-    res->size = res->document->size;
-    // Get current document name
-    res->name = res->document->name;
-    // Get current array based on document name
-    res->array = res->document->word_array;
-    return res->array;
+    else if (list_hasnext(res->docu_iter)){
+        // Get current document 
+        res->document = list_next(res->docu_iter);
+        // Get current size
+        res->size = res->document->size;
+        // Get current document name
+        res->name = res->document->name;
+        // Get current array based on document name
+        res->array = res->document->word_array;
+        return res->array;
     }
     else{
         return NULL;
@@ -234,7 +231,12 @@ char **result_get_content(search_result_t *res)
  */
 int result_get_content_length(search_result_t *res)
 {
+    if (res == NULL){
+    return NULL;
+    }
+    else{
     return res->size;
+    }
 }
 
 
@@ -247,18 +249,22 @@ search_hit_t *result_next(search_result_t *res)
 {
     search_hit_t *search_hit = malloc(sizeof(search_hit_t));
 
+    if (res == NULL)
+    {
+        return NULL;
+    }
     search_hit->location = list_next(res->document->word_placements);
     search_hit->word_placement = list_next(res->document->word_placements_correct);
-    search_hit->words_found = res->document->words_found;
-    search_hit->len = res->word_size;
-    search_hit->document_name = res->name;
     /* if word_placements and word_placements_correct are 0 at the same time
      * it means that we have hit the end of the list.
      */
-    if (search_hit->location == 0 && search_hit->word_placement == 0)
-    {
-        //free(search_hit);
-        return NULL;
+    if (search_hit->location == 0 && search_hit->word_placement == 0){
+        search_hit = NULL;
+    }
+    else{
+    search_hit->words_found = res->document->words_found;
+    search_hit->len = res->word_size;
+    search_hit->document_name = res->name;
     }
     return search_hit;
 }
