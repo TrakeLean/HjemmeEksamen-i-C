@@ -6,6 +6,7 @@
 #include "index.h"
 #include "list.h"
 #include "printing.h"
+#include "document.h"
 
 const char *example[15] = {
     "\"",

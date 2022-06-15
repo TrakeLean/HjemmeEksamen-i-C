@@ -217,7 +217,7 @@ int test_index()
         num_failed++;
         failed("Function returned NULL");
     }
-    else if (cmpfunc((void *)completed, "Hamlet") != 0)
+    else if (cmpfunc((void *)completed, "Hamlets") != 0)
     {
         num_failed++;
         failed("Function returned wrong value");

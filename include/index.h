@@ -3,7 +3,7 @@
 
 #include "list.h"
 #include "trie.h"
-#include "document.h"
+
 
 typedef struct index index_t;
 
@@ -16,6 +16,7 @@ typedef struct search_result search_result_t;
 typedef struct search_hit search_hit_t;
 struct search_hit
 {
+    char* document_name;
     int word_placement;
     int words_found;
     int location;

@@ -241,22 +241,29 @@ char *ui_main(index_t *idx)
 }
 
 
-static void ui_display_results_help(int rows, search_hit_t *cur_pos,int curr)
+static void ui_display_results_help(int rows, search_hit_t *cur_pos, int curr)
 {
     move(rows-1, 0);
     printw("HOME - Go back to search\t");
     printw("ENTER - Next result\t");
     if (cur_pos != NULL)
     {
-        printw("CURRENT WORD: %d", cur_pos->word_placement);
-        //printw("\tCURRENT WORD: %d", cur_pos->location);
+        printw("HUMAN WORD: %d", cur_pos->word_placement);
+        printw(" COMPUTER WORD: %d", cur_pos->location);
         printw("\t\tWORDS FOUND: %d/%d", curr,cur_pos->words_found);
     }
         
     move(0, 0);
 
     attron(COLOR_PAIR(2));
-    printw("SEARCH RESULTS");
+    if (cur_pos == NULL)
+    {
+        printw("SEARCH RESULTS");
+    }
+    else{
+        printw("SEARCH RESULTS FOR %s", cur_pos->document_name);
+    }
+    
     attroff(COLOR_PAIR(2));
     refresh();
 }
@@ -301,7 +308,7 @@ static void ui_display_results_content(char **content, int content_length, searc
 
 void ui_result(search_result_t *res)
 {
-    int row, c, curr;
+    int row, c, curr = 1;
     
     char **content = result_get_content(res);
     int content_length = result_get_content_length(res);
@@ -357,7 +364,6 @@ void ui_result(search_result_t *res)
         }
         
     }
-    // makes program crash after searching multiple times
     //free(res);
     return;
 }
